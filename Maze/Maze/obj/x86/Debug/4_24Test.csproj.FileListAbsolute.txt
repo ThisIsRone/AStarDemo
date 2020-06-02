@@ -1,0 +1,5 @@
+Q:\4_24Test\4_24Test\bin\Debug\4_24Test.exe
+Q:\4_24Test\4_24Test\bin\Debug\4_24Test.pdb
+Q:\4_24Test\4_24Test\obj\x86\Debug\ResolveAssemblyReference.cache
+Q:\4_24Test\4_24Test\obj\x86\Debug\4_24Test.exe
+Q:\4_24Test\4_24Test\obj\x86\Debug\4_24Test.pdb

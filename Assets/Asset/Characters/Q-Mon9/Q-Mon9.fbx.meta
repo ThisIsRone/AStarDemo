@@ -1,0 +1,152 @@
+fileFormatVersion: 2
+guid: 04ba698faa4d2cb4bb9187172bdd485f
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Back_L
+    100002: Back_Leg_L
+    100004: Back_Leg_L_end
+    100006: Back_Leg_R
+    100008: Back_Leg_R_end
+    100010: Back_R
+    100012: Body
+    100014: Body_end
+    100016: Chest_L
+    100018: Chest_R
+    100020: Control_BackLeg_L
+    100022: Control_BackLeg_L_end
+    100024: Control_BackLeg_R
+    100026: Control_BackLeg_R_end
+    100028: Control_FrontLeg_L
+    100030: Control_FrontLeg_L_end
+    100032: Control_FrontLeg_R
+    100034: Control_FrontLeg_R_end
+    100036: Control_SS
+    100038: Control_SS_end
+    100040: Front_Leg_L
+    100042: Front_Leg_L_end
+    100044: Front_Leg_R
+    100046: Front_Leg_R_end
+    100048: Pivot
+    100050: Position
+    100052: //RootNode
+    100054: Q-Mon9
+    100056: Q-Mon9_Objt
+    400000: Back_L
+    400002: Back_Leg_L
+    400004: Back_Leg_L_end
+    400006: Back_Leg_R
+    400008: Back_Leg_R_end
+    400010: Back_R
+    400012: Body
+    400014: Body_end
+    400016: Chest_L
+    400018: Chest_R
+    400020: Control_BackLeg_L
+    400022: Control_BackLeg_L_end
+    400024: Control_BackLeg_R
+    400026: Control_BackLeg_R_end
+    400028: Control_FrontLeg_L
+    400030: Control_FrontLeg_L_end
+    400032: Control_FrontLeg_R
+    400034: Control_FrontLeg_R_end
+    400036: Control_SS
+    400038: Control_SS_end
+    400040: Front_Leg_L
+    400042: Front_Leg_L_end
+    400044: Front_Leg_R
+    400046: Front_Leg_R_end
+    400048: Pivot
+    400050: Position
+    400052: //RootNode
+    400054: Q-Mon9
+    400056: Q-Mon9_Objt
+    4300000: Q-Mon9_Objt
+    7400000: Q-Mon9|Q-Mon_9 Idle
+    7400002: Q-Mon9|Q-Mon_9 Run
+    7400004: Q-Mon9|Q-Mon_9 Stand
+    9500000: //RootNode
+    13700000: Q-Mon9_Objt
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
