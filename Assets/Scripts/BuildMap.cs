@@ -4,57 +4,57 @@ using UnityEngine;
 
 public class BuildMap
 {
-    int[,] map_array = null;
+    private int[,] mapData;
 
-    public Vector2 size { get;private set; }
+    private Vector2 singleSize = Vector2.one;
 
-    public float length { get;private set; }
+    private Transform mapRoot;
 
+    private GameObject modle;
+
+    public void SetMapRoot(Transform mapRoot)
+    {
+        this.mapRoot = mapRoot;
+    }
 
     public void Init()
     {
-        map_array = {
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                           { 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1},
-                           { 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-                           { 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1},
-                           { 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1},
-                           { 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
-                           { 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-                           { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-        };
+        GameObject modle = GameObject.Find("Cube");
+
     }
 
     public void Release()
     {
-
     }
 
-    /// <summary>
-    /// 获取地图数据
-    /// </summary>
-    /// <returns></returns>
-    public int[,] GetMap()
+    public void CreateMap(Map map)
     {
-        return map_array;
+        mapData = map.GetMapData();
+        int w = mapData.GetLength(0);
+        int h = mapData.GetLength(1);
+        for (int i = 0; i < w; i++)
+        {
+            for (int j = 0; j < h; j++)
+            {
+                int op = mapData[i, j];
+                createSigleObj(op, i, j);
+            }
+        }
     }
 
-    /// <summary>
-    /// 设置地图的大小
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    public void SetSize(int x,int y)
+    public void SetSingleSize(float x,float y)
     {
-        size = new Vector2(x, y);
+        singleSize = new Vector2(x, y);
     }
 
-    /// <summary>
-    /// 设置格子的长度
-    /// </summary>
-    /// <param name="length"></param>
-    public void SetLength(float length)
+    private void createSigleObj(int op,int i,int j)
     {
-        this.length = length;
+        if (op > 0)
+        {
+            GameObject go = GameObject.Instantiate(modle);
+            go.name = i + "_" + j;
+            go.transform.SetParent(mapRoot);
+            go.transform.localPosition = new Vector3(i * singleSize.x, 0, j * singleSize.y);
+        }
     }
 }

@@ -4,17 +4,34 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    private BuildMap map = new BuildMap();
+    private Map map;
+    private BuildMap buildMap;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        map
+        map = new Map();
+        map.Init();
+        buildMap = new BuildMap();
+        buildMap.Init();
+    }
+
+    private void Start()
+    {
+        GameObject mapRoot = GameObject.Find("MapRoot");
+        buildMap.SetMapRoot(mapRoot.transform);
+        buildMap.CreateMap(map);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnDestroy()
+    {
+        map.Release();
+        buildMap.Release();
     }
 }
