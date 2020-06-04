@@ -12,6 +12,10 @@ public class BuildMap
 
     private GameObject modle;
 
+    private GameObject panel;
+
+    private float panelOffset = 0.1f;
+
     public void SetMapRoot(Transform mapRoot)
     {
         this.mapRoot = mapRoot;
@@ -19,8 +23,8 @@ public class BuildMap
 
     public void Init()
     {
-        GameObject modle = GameObject.Find("Cube");
-
+        modle = GameObject.Find("Cube");
+        panel = GameObject.Find("Plane");
     }
 
     public void Release()
@@ -32,10 +36,14 @@ public class BuildMap
         mapData = map.GetMapData();
         int w = mapData.GetLength(0);
         int h = mapData.GetLength(1);
+        panel.transform.localScale = new Vector3(w * panelOffset,1,h * panelOffset);
+        panel.transform.position = new Vector3((w - 1) * 0.5f, -0.5f, (h -1) * 0.5f);
         for (int i = 0; i < w; i++)
         {
             for (int j = 0; j < h; j++)
             {
+                Debug.LogError(i + " " + j);
+
                 int op = mapData[i, j];
                 createSigleObj(op, i, j);
             }
@@ -55,6 +63,7 @@ public class BuildMap
             go.name = i + "_" + j;
             go.transform.SetParent(mapRoot);
             go.transform.localPosition = new Vector3(i * singleSize.x, 0, j * singleSize.y);
+            go.transform.localScale = Vector3.one;
         }
     }
 }

@@ -7,17 +7,12 @@ public class Main : MonoBehaviour
     private Map map;
     private BuildMap buildMap;
 
-    // Start is called before the first frame update
-    void Awake()
+    private void Start()
     {
         map = new Map();
         map.Init();
         buildMap = new BuildMap();
         buildMap.Init();
-    }
-
-    private void Start()
-    {
         GameObject mapRoot = GameObject.Find("MapRoot");
         buildMap.SetMapRoot(mapRoot.transform);
         buildMap.CreateMap(map);
