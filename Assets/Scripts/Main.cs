@@ -5,9 +5,9 @@ using UnityEngine;
 public class Main : MonoBehaviour
 {
     private Map map;
+    private Finder finder;
     private BuildMap buildMap;
-
-    private void Start()
+    private void Awake()
     {
         map = new Map();
         map.Init();
@@ -15,13 +15,20 @@ public class Main : MonoBehaviour
         buildMap.Init();
         GameObject mapRoot = GameObject.Find("MapRoot");
         buildMap.SetMapRoot(mapRoot.transform);
+        finder = new Finder(map);
+    }
+
+    private void Start()
+    {
         buildMap.CreateMap(map);
+        var point = finder.FindPath();
+        point.PrintPath();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        buildMap.Update();
     }
 
     private void OnDestroy()

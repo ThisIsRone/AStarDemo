@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Map
 {
-    int[,] map_array = null;
+    public int[,] mapData { get; private set; }
 
     public Vector2 size { get; private set; }
 
@@ -13,19 +13,19 @@ public class Map
 
     public void Init()
     {
-        map_array = GetMapData();
+        mapData = initDefaultData();
     }
 
     public void Release()
     {
-        map_array = null;
+        mapData = null;
     }
 
     /// <summary>
     /// 获取地图数据
     /// </summary>
     /// <returns></returns>
-    public int[,] GetMapData()
+    private int[,] initDefaultData()
     {
         int[,] map_data = new int[,]{
                            { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -38,5 +38,15 @@ public class Map
                            { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
         return map_data;
+    }
+
+    public int GetValue(int x,int y)
+    {
+        return mapData[x,y];
+    }   
+
+    public void SetValue(int x, int y,int value)
+    {
+        mapData.SetValue(value, x, y);
     }
 }

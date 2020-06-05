@@ -1,13 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildMap
 {
-    private int[,] mapData;
-
-    private Vector2 singleSize = Vector2.one;
-
     private Transform mapRoot;
 
     private GameObject modle;
@@ -15,6 +12,8 @@ public class BuildMap
     private GameObject panel;
 
     private float panelOffset = 0.1f;
+
+    private int mask;
 
     public void SetMapRoot(Transform mapRoot)
     {
@@ -25,6 +24,22 @@ public class BuildMap
     {
         modle = GameObject.Find("Cube");
         panel = GameObject.Find("Plane");
+        mask = LayerMask.NameToLayer("Cube");
+    }
+
+    public void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            //从摄像机发出到点击坐标的射线
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+            if (Physics.Raycast(ray, out hitInfo, mask))
+            {
+                var pointer = hitInfo.collider.GetComponent<Pointer>();
+                pointer?.Switch();
+            }
+        }
     }
 
     public void Release()
@@ -33,7 +48,7 @@ public class BuildMap
 
     public void CreateMap(Map map)
     {
-        mapData = map.GetMapData();
+        var mapData = map.mapData;
         int w = mapData.GetLength(0);
         int h = mapData.GetLength(1);
         panel.transform.localScale = new Vector3(w * panelOffset,1,h * panelOffset);
@@ -42,28 +57,17 @@ public class BuildMap
         {
             for (int j = 0; j < h; j++)
             {
-                Debug.LogError(i + " " + j);
-
                 int op = mapData[i, j];
-                createSigleObj(op, i, j);
+                createSigleObj(map,op, i, j);
             }
         }
     }
 
-    public void SetSingleSize(float x,float y)
+    private void createSigleObj(Map map,int op,int i,int j)
     {
-        singleSize = new Vector2(x, y);
-    }
-
-    private void createSigleObj(int op,int i,int j)
-    {
-        if (op > 0)
-        {
-            GameObject go = GameObject.Instantiate(modle);
-            go.name = i + "_" + j;
-            go.transform.SetParent(mapRoot);
-            go.transform.localPosition = new Vector3(i * singleSize.x, 0, j * singleSize.y);
-            go.transform.localScale = Vector3.one;
-        }
+        GameObject go = GameObject.Instantiate(modle);
+        go.transform.SetParent(mapRoot);
+        var pointer = go.GetComponent<Pointer>();
+        pointer?.SetPointer(map, i, j);
     }
 }

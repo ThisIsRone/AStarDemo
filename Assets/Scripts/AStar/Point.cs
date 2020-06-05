@@ -26,4 +26,15 @@ public class Point
     {
         return string.Format("F:{0} G:{1} H:{2} ( X:{3} Y:{4}) ", F, G, H, X, Y);
     }
+
+    public void PrintPath()
+    {
+        Debug.LogError("Print path:");
+        var parent = ParentPoint;
+        while (parent != null)
+        {
+            Debug.LogError(parent.ToString());
+            parent = parent.ParentPoint;
+        }
+    }
 }

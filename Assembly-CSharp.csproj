@@ -63,12 +63,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\AStarFinder.cs" />
+    <Compile Include="Assets\Scripts\AStar\Finder.cs" />
+    <Compile Include="Assets\Scripts\AStar\ListHelper.cs" />
+    <Compile Include="Assets\Scripts\AStar\Point.cs" />
     <Compile Include="Assets\Scripts\BuildMap.cs" />
-    <Compile Include="Assets\Scripts\ListHelper.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
-    <Compile Include="Assets\Scripts\Point.cs" />
+    <Compile Include="Assets\Scripts\Pointer.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>F:/GitObject/AStarDemo/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

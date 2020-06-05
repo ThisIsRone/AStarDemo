@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AStarFinder
+public class Finder
 {
     /// <summary>
     /// 相邻对角的移动价值
@@ -20,24 +20,20 @@ public class AStarFinder
     /// </summary>
     public Map map { get; private set; }
 
-    private int[,] MapData;
-
     private List<Point> CloseList = new List<Point>();
 
     private List<Point> OpenList = new List<Point>();
 
-    public AStarFinder(Map map)
+    public Finder(Map map)
     {
         this.map = map;
-        CatchMapData();
     }
 
-    /// <summary>
-    /// 更新最新的地图数据
-    /// </summary>
-    public void CatchMapData()
+    public Point FindPath(bool isIgnoreCorner = true)
     {
-        MapData = map.GetMapData();
+        Point start = new Point(1, 10);
+        Point end = new Point(5, 0);
+        return FindPath(start, end, isIgnoreCorner);
     }
 
     public Point FindPath(Point start,Point end,bool isIgnoreCorner)
@@ -93,7 +89,7 @@ public class AStarFinder
     //在二维数组对应的位置不为障碍物
     private bool CanReach(int x, int y)
     {
-        return MapData[x, y] == 0;
+        return map.GetValue(x, y) == 0;
     }
 
     public bool CanReach(Point start, int x, int y, bool IsIgnoreCorner)
