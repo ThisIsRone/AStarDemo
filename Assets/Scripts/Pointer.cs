@@ -10,7 +10,7 @@ public class Pointer : MonoBehaviour
 
     private int x,y;
 
-    private Vector2 fator = Vector2.one;
+    private Vector2 fator = new Vector2(80,80);
 
     public void SetPointer(Map map,int x,int y)
     {
@@ -45,18 +45,19 @@ public class Pointer : MonoBehaviour
 
     private void SetShow()
     {
-        transform.localPosition = new Vector3(x * fator.x, 0, y * fator.y);
-        transform.localScale = Vector3.one * 0.9f;
+        transform.localPosition = new Vector3(-x * fator.x, y * fator.y);
+        transform.localScale = Vector3.one;
     }
 
     private void SetHide()
     {
-        transform.localPosition = new Vector3(x * fator.x, -1, y * fator.y);
-        transform.localScale = Vector3.one * 0.9f;
+        transform.localPosition = new Vector3(-x * fator.x, y * fator.y);
+        transform.localScale = Vector3.one;
     }
 
     public override string ToString()
     {
         return string.Format("(x:{0},y:{1})", x, y);
     }
+
 }

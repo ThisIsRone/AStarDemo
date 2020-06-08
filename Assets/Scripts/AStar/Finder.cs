@@ -31,8 +31,8 @@ public class Finder
 
     public Point FindPath(bool isIgnoreCorner = true)
     {
-        Point start = new Point(1, 10);
-        Point end = new Point(5, 0);
+        Point start = new Point(1, 1);
+        Point end = new Point(4, 4);
         return FindPath(start, end, isIgnoreCorner);
     }
 
