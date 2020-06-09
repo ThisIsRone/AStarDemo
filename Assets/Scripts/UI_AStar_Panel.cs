@@ -22,8 +22,8 @@ public class UI_AStar_Panel : MonoBehaviour
     private void Start()
     {
         CreateMap(map);
-        var point = finder.FindPath();
-        point.PrintPath();
+        //var point = finder.FindPath();
+        //point.PrintPath();
     }
 
     private void OnDestroy()
@@ -50,7 +50,7 @@ public class UI_AStar_Panel : MonoBehaviour
     {
         GameObject go = GameObject.Instantiate(modlePointer);
         go.SetActive(true);
-        go.transform.SetParent(mapRoot);
+        go.transform.SetParent(mapRoot,false);
         var pointer = go.GetComponent<Pointer>();
         pointer?.SetPointer(map, i, j);
     }
