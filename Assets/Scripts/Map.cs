@@ -11,36 +11,22 @@ public class Map
     public float length { get; private set; }
 
 
-    public void Init()
-    {
-        mapData = initDefaultData();
-    }
-
     public void Release()
     {
         mapData = null;
     }
 
-    /// <summary>
-    /// 获取地图数据
-    /// </summary>
-    /// <returns></returns>
-    private int[,] initDefaultData()
+    public void RebuildMap(int width,int height)
     {
-        int[,] map_data = new int[,]{
-                           { 1, 1, 1, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-                           { 1, 0, 0, 1},                
-        };
-        return map_data;
+        mapData = new int[height, width];
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                int op = Random.Range(0, 9) > 7 ? 1 : 0;
+                mapData[j, i] = op;
+            }
+        }
     }
 
     public int GetValue(int x,int y)
