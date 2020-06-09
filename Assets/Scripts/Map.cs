@@ -28,19 +28,28 @@ public class Map
     private int[,] initDefaultData()
     {
         int[,] map_data = new int[,]{
-                           { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                           { 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1},                 
+                           { 1, 1, 1, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
+                           { 1, 0, 0, 1},                
         };
         return map_data;
     }
 
     public int GetValue(int x,int y)
     {
-        return mapData[x,y];
+        return mapData[y,x];
     }   
 
     public void SetValue(int x, int y,int value)
     {
-        mapData.SetValue(value, x, y);
+        mapData.SetValue(value, y, x);
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_AStar_Panel : MonoBehaviour
 {
     private Map map;
     private Finder finder;
     private Transform mapRoot;
+    private GridLayoutGroup  grid;
 
     private GameObject modlePointer;
 
@@ -15,8 +17,9 @@ public class UI_AStar_Panel : MonoBehaviour
         map = new Map();
         map.Init();
         finder = new Finder(map);
-        mapRoot = transform.Find("MapRoot");
+        mapRoot = transform.Find("Scroll View/Viewport/Content");
         modlePointer = transform.Find("Pointer").gameObject;
+        grid = mapRoot.GetComponent<GridLayoutGroup>();
     }
 
     private void Start()
@@ -34,24 +37,24 @@ public class UI_AStar_Panel : MonoBehaviour
     public void CreateMap(Map map)
     {
         var mapData = map.mapData;
-        int w = mapData.GetLength(0);
-        int h = mapData.GetLength(1);
-        for (int i = 0; i < w; i++)
+        int h = mapData.GetLength(0);
+        int w = mapData.GetLength(1);
+        grid.constraintCount = w;
+        for (int y = 0; y < h; y++)
         {
-            for (int j = 0; j < h; j++)
+            for (int x = 0; x < w; x++)
             {
-                int op = mapData[i,j];
-                createSigleObj(map, op, i, j);
+                createSigleObj(map, x, y);
             }
         }
     }
 
-    private void createSigleObj(Map map, int op, int i, int j)
+    private void createSigleObj(Map map, int x, int y)
     {
         GameObject go = GameObject.Instantiate(modlePointer);
         go.SetActive(true);
         go.transform.SetParent(mapRoot,false);
         var pointer = go.GetComponent<Pointer>();
-        pointer?.SetPointer(map, i, j);
+        pointer?.SetPointer(map, x, y);
     }
 }
