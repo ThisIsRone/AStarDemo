@@ -52,9 +52,19 @@ public class Pointer : MonoBehaviour
         }
     }
 
+    public void SetSelect()
+    {
+        img.color = Color.blue;
+    }
+
     private void SetNormal()
     {
         img.color = Color.white;
+    }
+
+    public void SetSearch()
+    {
+        img.color = new Color(1,1,1,0.5f);
     }
 
     private void SetObstacle()

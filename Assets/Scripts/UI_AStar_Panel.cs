@@ -8,7 +8,7 @@ public class UI_AStar_Panel : MonoBehaviour
     private Map map;
     private Finder finder;
     private Transform mapRoot;
-    private GridLayoutGroup  grid;
+    private GridLayoutGroup grid;
     private GameObject modlePointer;
     [SerializeField]
     private Slider sldWidth = null;
@@ -36,6 +36,7 @@ public class UI_AStar_Panel : MonoBehaviour
     {
         map = new Map();
         finder = new Finder(map);
+        finder.OpenListCallBack = OpenListCallBack;
         mapRoot = transform.Find("Scroll View/Viewport/Content");
         modlePointer = transform.Find("Pointer").gameObject;
         grid = mapRoot.GetComponent<GridLayoutGroup>();
@@ -43,32 +44,8 @@ public class UI_AStar_Panel : MonoBehaviour
         sldHeight.onValueChanged.AddListener(sldHeighChange);
         btnBuildMap.onClick.AddListener(onClickDrawMap);
         btnFinder.onClick.AddListener(onClickFinder);
-    }
 
-    private void sldWidthChange(float v)
-    {
-        txtWidth.text = Mathf.FloorToInt(v).ToString();
     }
-
-    private void sldHeighChange(float v)
-    {
-        txtHeigh.text = Mathf.FloorToInt(v).ToString();
-    }
-
-    private void onClickDrawMap()
-    {
-        int width = Mathf.FloorToInt(sldWidth.value);
-        int height = Mathf.FloorToInt(sldHeight.value);
-        map.RebuildMap(width, height);
-        CreateMap(map);
-    }
-
-    private void onClickFinder()
-    {
-        var point = finder.FindPath();
-        point.PrintPath();
-    }
-
     private void Start()
     {
         onClickDrawMap();
@@ -77,6 +54,15 @@ public class UI_AStar_Panel : MonoBehaviour
     private void OnDestroy()
     {
         map.Release();
+    }
+
+    private void CleanMap()
+    {
+        for (int i = 0; i < mapRoot.childCount; i++)
+        {
+            var child = mapRoot.GetChild(i);
+            GameObject.Destroy(child.gameObject);
+        }
     }
 
     public void CreateMap(Map map)
@@ -98,8 +84,67 @@ public class UI_AStar_Panel : MonoBehaviour
     {
         GameObject go = GameObject.Instantiate(modlePointer);
         go.SetActive(true);
-        go.transform.SetParent(mapRoot,false);
+        go.transform.SetParent(mapRoot, false);
         var pointer = go.GetComponent<Pointer>();
         pointer?.SetPointer(map, x, y);
+    }
+
+
+    private void sldWidthChange(float v)
+    {
+        txtWidth.text = Mathf.FloorToInt(v).ToString();
+    }
+
+    private void sldHeighChange(float v)
+    {
+        txtHeigh.text = Mathf.FloorToInt(v).ToString();
+    }
+
+    private void onClickDrawMap()
+    {
+        CleanMap();
+        int width = Mathf.FloorToInt(sldWidth.value);
+        int height = Mathf.FloorToInt(sldHeight.value);
+        map.RebuildMap(width, height);
+        CreateMap(map);
+    }
+
+    private void onClickFinder()
+    {
+        int startX = int.Parse(ipfStartX.text);
+        int startY = int.Parse(ipfStartY.text);
+        int endX = int.Parse(ipfEndX.text);
+        int endY = int.Parse(ipfEndY.text);
+        Point start = new Point(startX, startY);
+        Point end = new Point(endX, endY);
+        var point = GetPoint(start, end);
+        var parent = point.ParentPoint;
+        while (parent != null)
+        {
+            string rootName = parent.ToPoint();
+            Transform root = mapRoot.transform.Find(rootName);
+            Pointer pointer = root?.GetComponent<Pointer>();
+            pointer?.SetSelect();
+            parent = parent.ParentPoint;
+        }
+        Transform endRoot = mapRoot.transform.Find(end.ToPoint());
+        Pointer endPointer = endRoot?.GetComponent<Pointer>();
+        endPointer?.SetSelect();
+    }
+
+    private Point GetPoint(Point start, Point end)
+    {
+        return finder.FindPath(start, end, true);
+    }
+
+    private void OpenListCallBack(Point point)
+    {
+        string rootName = point.ToPoint();
+        Transform root = mapRoot.transform.Find(rootName);
+        Pointer pointer = root?.GetComponent<Pointer>();
+        if (pointer)
+        {
+            pointer.SetSearch();
+        }
     }
 }

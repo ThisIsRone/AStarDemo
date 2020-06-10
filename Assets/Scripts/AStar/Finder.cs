@@ -20,6 +20,8 @@ public class Finder
     /// </summary>
     public Map map { get; private set; }
 
+    public Action<Point> OpenListCallBack { get; set; }
+
     private List<Point> CloseList = new List<Point>();
 
     private List<Point> OpenList = new List<Point>();
@@ -27,13 +29,6 @@ public class Finder
     public Finder(Map map)
     {
         this.map = map;
-    }
-
-    public Point FindPath(bool isIgnoreCorner = true)
-    {
-        Point start = new Point(1, 1);
-        Point end = new Point(4, 4);
-        return FindPath(start, end, isIgnoreCorner);
     }
 
     public Point FindPath(Point start,Point end,bool isIgnoreCorner)
@@ -89,7 +84,27 @@ public class Finder
     //在二维数组对应的位置不为障碍物
     private bool CanReach(int x, int y)
     {
+        if(!IsVaildPoint(x, y))
+        {
+            return false;
+        }
         return map.GetValue(x, y) == 0;
+    }
+
+    //是否是地图上的点
+    private bool IsVaildPoint(int x,int y)
+    {
+        int h = map.mapData.GetLength(0);
+        int w = map.mapData.GetLength(1);
+        if (x < 0 || x >= w)
+        {
+            return false;
+        }
+        if (y < 0 || y >= h)
+        {
+            return false;
+        }
+        return true;
     }
 
     public bool CanReach(Point start, int x, int y, bool IsIgnoreCorner)
@@ -129,6 +144,7 @@ public class Finder
         point.H = CalcH(end, point);
         point.CalcF();
         OpenList.Add(point);
+        OpenListCallBack?.Invoke(point);
     }
 
     /// <summary>

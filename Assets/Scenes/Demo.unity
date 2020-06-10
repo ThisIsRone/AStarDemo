@@ -3142,7 +3142,7 @@ MonoBehaviour:
   ipfStartY: {fileID: 1287821756}
   ipfEndX: {fileID: 393098286}
   ipfEndY: {fileID: 398953267}
-  btnFinder: {fileID: 62918876}
+  btnFinder: {fileID: 92672694}
 --- !u!1 &1251796295
 GameObject:
   m_ObjectHideFlags: 0

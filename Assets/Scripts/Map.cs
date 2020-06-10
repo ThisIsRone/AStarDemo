@@ -31,6 +31,7 @@ public class Map
 
     public int GetValue(int x,int y)
     {
+        Debug.Log(string.Format("x:{0} y:{1}",x,y));
         return mapData[y,x];
     }   
 
