@@ -7,6 +7,7 @@ public class UI_AStar_Panel : MonoBehaviour
 {
     private Map map;
     private Finder finder;
+    private AsynFinder asynFinder;
     private Transform mapRoot;
     private GridLayoutGroup grid;
     private GameObject modlePointer;
@@ -32,18 +33,17 @@ public class UI_AStar_Panel : MonoBehaviour
     [SerializeField]
     private Button btnFinder = null;
 
+    private Coroutine coroutine = null;
+
     private void Awake()
     {
-        map = new Map();
-        finder = new Finder(map);
-        finder.OpenListCallBack = OpenListCallBack;
         mapRoot = transform.Find("Scroll View/Viewport/Content");
         modlePointer = transform.Find("Pointer").gameObject;
         grid = mapRoot.GetComponent<GridLayoutGroup>();
         sldWidth.onValueChanged.AddListener(sldWidthChange);
         sldHeight.onValueChanged.AddListener(sldHeighChange);
         btnBuildMap.onClick.AddListener(onClickDrawMap);
-        btnFinder.onClick.AddListener(onClickFinder);
+        btnFinder.onClick.AddListener(onClickAsynFinder);
 
     }
     private void Start()
@@ -102,11 +102,23 @@ public class UI_AStar_Panel : MonoBehaviour
 
     private void onClickDrawMap()
     {
+        map = new Map();
+        finder = new Finder(map);
+        finder.OpenListCallBack = OpenListCallBack;
+        asynFinder = new AsynFinder(map);
+        asynFinder.OpenListCallBack = OpenListCallBack;
         CleanMap();
         int width = Mathf.FloorToInt(sldWidth.value);
         int height = Mathf.FloorToInt(sldHeight.value);
+        
         map.RebuildMap(width, height);
         CreateMap(map);
+        //设置输入限制
+        ipfStartX.characterLimit = width;
+        ipfStartY.characterLimit = height;
+        ipfEndX.characterLimit = width;
+        ipfEndY.characterLimit = height;
+
     }
 
     private void onClickFinder()
@@ -132,6 +144,39 @@ public class UI_AStar_Panel : MonoBehaviour
         endPointer?.SetSelect();
     }
 
+    private void onClickAsynFinder()
+    {
+        int startX = int.Parse(ipfStartX.text);
+        int startY = int.Parse(ipfStartY.text);
+        int endX = int.Parse(ipfEndX.text);
+        int endY = int.Parse(ipfEndY.text);
+        Point start = new Point(startX, startY);
+        Point end = new Point(endX, endY);
+
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+            coroutine = null;
+        }
+        coroutine = StartCoroutine(asynFinder.AsynFindPath(start, end, true, (Point point) =>
+        {
+            var parent = point.ParentPoint;
+            while (parent != null)
+            {
+                string rootName = parent.ToPoint();
+                Transform root = mapRoot.transform.Find(rootName);
+                Pointer pointer = root?.GetComponent<Pointer>();
+                pointer?.SetSelect();
+                parent = parent.ParentPoint;
+            }
+            Transform endRoot = mapRoot.transform.Find(end.ToPoint());
+            Pointer endPointer = endRoot?.GetComponent<Pointer>();
+            endPointer?.SetSelect();
+            coroutine = null;
+        }));
+
+    }
+
     private Point GetPoint(Point start, Point end)
     {
         return finder.FindPath(start, end, true);
@@ -144,7 +189,7 @@ public class UI_AStar_Panel : MonoBehaviour
         Pointer pointer = root?.GetComponent<Pointer>();
         if (pointer)
         {
-            pointer.SetSearch();
+            pointer.SetSearch(point);
         }
     }
 }

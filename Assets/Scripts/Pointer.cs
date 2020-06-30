@@ -15,6 +15,12 @@ public class Pointer : MonoBehaviour
 
     private Image img = null;
 
+    public GameObject obj_infoRoot;
+
+    public Text txt_number;
+
+    public Text txt_pos;
+
     private void Awake()
     {
         img = transform.GetComponent<Image>();
@@ -60,16 +66,20 @@ public class Pointer : MonoBehaviour
     private void SetNormal()
     {
         img.color = Color.white;
+        obj_infoRoot.SetActive(true);
+        txt_pos.text = ToString();
     }
 
-    public void SetSearch()
+    public void SetSearch(Point point)
     {
         img.color = new Color(1,1,1,0.5f);
+        txt_number.text = string.Format("F:{2} \n G:{0} H:{1}",point.G,point.H,point.F);
     }
 
     private void SetObstacle()
     {
         img.color = Color.red;
+        obj_infoRoot.SetActive(false);
     }
 
     public override string ToString()

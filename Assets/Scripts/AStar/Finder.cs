@@ -22,9 +22,9 @@ public class Finder
 
     public Action<Point> OpenListCallBack { get; set; }
 
-    private List<Point> CloseList = new List<Point>();
+    protected List<Point> CloseList = new List<Point>();
 
-    private List<Point> OpenList = new List<Point>();
+    protected List<Point> OpenList = new List<Point>();
 
     public Finder(Map map)
     {
@@ -82,7 +82,7 @@ public class Finder
     }
 
     //在二维数组对应的位置不为障碍物
-    private bool CanReach(int x, int y)
+    protected bool CanReach(int x, int y)
     {
         if(!IsVaildPoint(x, y))
         {
@@ -92,7 +92,7 @@ public class Finder
     }
 
     //是否是地图上的点
-    private bool IsVaildPoint(int x,int y)
+    protected bool IsVaildPoint(int x,int y)
     {
         int h = map.mapData.GetLength(0);
         int w = map.mapData.GetLength(1);
@@ -126,7 +126,7 @@ public class Finder
         }
     }
 
-    private void FoundPoint(Point tempStart, Point point)
+    protected void FoundPoint(Point tempStart, Point point)
     {
         var G = CalcG(tempStart, point);
         if (G < point.G)
@@ -137,7 +137,7 @@ public class Finder
         }
     }
 
-    private void NotFoundPoint(Point tempStart, Point end, Point point)
+    protected void NotFoundPoint(Point tempStart, Point end, Point point)
     {
         point.ParentPoint = tempStart;
         point.G = CalcG(tempStart, point);
@@ -153,7 +153,7 @@ public class Finder
     /// <param name="start">起始点</param>
     /// <param name="point">目标点</param>
     /// <returns></returns>
-    private int CalcG(Point start, Point point)
+    protected int CalcG(Point start, Point point)
     {
         int G = (Math.Abs(point.X - start.X) + Math.Abs(point.Y - start.Y)) == 2 ? VALUE_STEP_LINE : VALU_STEP_CORNER;
         int parentG = point.ParentPoint != null ? point.ParentPoint.G : 0;
@@ -166,7 +166,7 @@ public class Finder
     /// <param name="end"></param>
     /// <param name="point"></param>
     /// <returns></returns>
-    private int CalcH(Point end, Point point)
+    protected int CalcH(Point end, Point point)
     {
         int step = Math.Abs(point.X - end.X) + Math.Abs(point.Y - end.Y);
         return step * VALUE_STEP_LINE;
