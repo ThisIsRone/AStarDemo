@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Finder
+public class AStarSearch : BaseSearch
 {
     /// <summary>
     /// 相邻对角的移动价值
@@ -15,52 +15,84 @@ public class Finder
     /// </summary>
     public const int VALUE_STEP_LINE = 10;
 
-    /// <summary>
-    /// 地图数据
-    /// </summary>
-    public Map map { get; private set; }
-
-    public Action<Point> OpenListCallBack { get; set; }
-
     protected List<Point> CloseList = new List<Point>();
 
     protected List<Point> OpenList = new List<Point>();
 
-    public Finder(Map map)
+    public AStarSearch(Map map):base(map)
     {
-        this.map = map;
+       
     }
 
-    public Point FindPath(Point start,Point end,bool isIgnoreCorner)
+    public override Point FindPath(SearchData searchData)
     {
+        if (!(searchData is AstarData))
+        {
+            Debug.LogError("数据类型错误！");
+            return null;
+        }
+        AstarData astarData = searchData as AstarData;
+        Point start = astarData.start;
+        Point end = astarData.end;
+        bool isIgnoreCorner = astarData.isIgnoreCorner;
         OpenList.Add(start);
         while(OpenList.Count != 0)
         {
-            //找出F值最小的点
-            var tempPoint = OpenList.MinPoint();
-            OpenList.RemoveAt(0);
-            CloseList.Add(tempPoint);
-            var alivePoints = SearchAroundAlivePoint(tempPoint, isIgnoreCorner);
-            for (int i = 0; i < alivePoints.Count; i++)
-            {
-                Point p = alivePoints[i];
-                if (OpenList.Exists(p))
-                {
-                    //计算G值, 如果比原来的大, 就什么都不做, 否则设置它的父节点为当前点,并更新G和F
-                    FoundPoint(tempPoint, p);
-                }
-                else
-                {
-                    //如果它们不在开始列表里, 就加入, 并设置父节点,并计算GHF
-                    NotFoundPoint(tempPoint, end, p);
-                }
-            }
+            stepSearch(start, end);
             if (OpenList.Get(end) != null)
                 return OpenList.Get(end);
         }
         return OpenList.Get(end);
     }
 
+    public override IEnumerator AsynFindPath(SearchData searchData)
+    {
+        if (!(searchData is AstarData))
+        {
+            Debug.LogError("数据类型错误！");
+            yield break;
+        }
+        AstarData astarData = searchData as AstarData;
+        Point start = astarData.start;
+        Point end = astarData.end;
+        bool isIgnoreCorner = astarData.isIgnoreCorner;
+        Action<Point> cmpltCllBck = astarData.cmpltCllBck;
+
+        WaitForSeconds waitHalfSeconds = new WaitForSeconds(0.5f);
+        OpenList.Add(start);
+        while (OpenList.Count != 0)
+        {
+            stepSearch(start, end);
+            if (OpenList.Get(end) != null)
+                break;
+            yield return waitHalfSeconds;
+        }
+        Point result = OpenList.Get(end);
+        cmpltCllBck?.Invoke(result);
+    }
+
+    private void stepSearch(Point start, Point end)
+    {
+        //找出F值最小的点
+        var tempPoint = OpenList.MinPoint();
+        OpenList.RemoveAt(0);
+        CloseList.Add(tempPoint);
+        var alivePoints = SearchAroundAlivePoint(tempPoint, false);
+        for (int i = 0; i < alivePoints.Count; i++)
+        {
+            Point p = alivePoints[i];
+            if (OpenList.Exists(p))
+            {
+                //计算G值, 如果比原来的大, 就什么都不做, 否则设置它的父节点为当前点,并更新G和F
+                FoundPoint(tempPoint, p);
+            }
+            else
+            {
+                //如果它们不在开始列表里, 就加入, 并设置父节点,并计算GHF
+                NotFoundPoint(tempPoint, end, p);
+            }
+        }
+    }
 
     /// <summary>
     /// 获取9宫格内可到达的点
@@ -144,7 +176,7 @@ public class Finder
         point.H = CalcH(end, point);
         point.CalcF();
         OpenList.Add(point);
-        OpenListCallBack?.Invoke(point);
+        CallBack?.Invoke(point);
     }
 
     /// <summary>
