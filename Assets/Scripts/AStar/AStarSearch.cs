@@ -57,15 +57,13 @@ public class AStarSearch : BaseSearch
         Point end = astarData.end;
         bool isIgnoreCorner = astarData.isIgnoreCorner;
         Action<Point> cmpltCllBck = astarData.cmpltCllBck;
-
-        WaitForSeconds waitHalfSeconds = new WaitForSeconds(0.5f);
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
             stepSearch(start, end);
             if (OpenList.Get(end) != null)
                 break;
-            yield return waitHalfSeconds;
+            yield return searchData.interval;
         }
         Point result = OpenList.Get(end);
         cmpltCllBck?.Invoke(result);

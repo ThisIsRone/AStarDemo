@@ -28,7 +28,9 @@ public class Panel : MonoBehaviour
     [SerializeField]
     private Dropdown drpd_Opt;  
     [SerializeField]
-    private Slider sld_viewScale;
+    private Slider sld_viewScale;  
+    [SerializeField]
+    private Slider sld_interval;
     [SerializeField]
     private Button btn_reset;
     [SerializeField]
@@ -160,6 +162,8 @@ public class Panel : MonoBehaviour
 
     private void onClickAsynFinder()
     {
+        YieldInstruction interval = sld_interval.value == 0 ? null : new WaitForSeconds(sld_interval.value);
+        searchData.interval = interval;
         searchData.start = new Point((int)map.start.x, (int)map.start.y);
         searchData.end = new Point((int)map.end.x, (int)map.end.y);        
         if (coroutine != null)

@@ -143,7 +143,7 @@ public class Pointer : MonoBehaviour
     public void SetSearch(Point point)
     {
         float a = img.color.a == 1?0.8f: img.color.a;
-        a -= 0.1f;
+        a -= 0.2f;
         a = Mathf.Clamp(a, 0.3f, 0.8f);
         Color color = new Color(img.color.r, img.color.g, img.color.b, a);
         img.color = color;

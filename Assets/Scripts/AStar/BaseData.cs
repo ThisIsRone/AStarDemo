@@ -4,6 +4,7 @@ public class SearchData
 {
     public Point start;
     public Point end;
+    public UnityEngine.YieldInstruction interval;
 }
 
 public class AstarData: SearchData
