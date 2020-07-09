@@ -19,9 +19,9 @@ public class AStarSearch : BaseSearch
 
     protected List<Point> OpenList = new List<Point>();
 
-    public AStarSearch(Map map):base(map)
+    public AStarSearch(Map map) : base(map)
     {
-       
+
     }
 
     public override Point FindPath(SearchData searchData)
@@ -36,9 +36,9 @@ public class AStarSearch : BaseSearch
         Point end = astarData.end;
         bool isIgnoreCorner = astarData.isIgnoreCorner;
         OpenList.Add(start);
-        while(OpenList.Count != 0)
+        while (OpenList.Count != 0)
         {
-            stepSearch(start, end);
+            stepSearch(start, end, isIgnoreCorner);
             if (OpenList.Get(end) != null)
                 return OpenList.Get(end);
         }
@@ -60,7 +60,7 @@ public class AStarSearch : BaseSearch
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
-            stepSearch(start, end);
+            stepSearch(start, end, isIgnoreCorner);
             if (OpenList.Get(end) != null)
                 break;
             yield return searchData.interval;
@@ -69,25 +69,26 @@ public class AStarSearch : BaseSearch
         cmpltCllBck?.Invoke(result);
     }
 
-    private void stepSearch(Point start, Point end)
+    private void stepSearch(Point start, Point end, bool isIgnoreCorner)
     {
         //找出F值最小的点
-        var tempPoint = OpenList.MinPoint();
-        OpenList.RemoveAt(0);
+        var tempPoint = OpenList.PopMinPoint();
+        //OpenList.RemoveAt(0);
         CloseList.Add(tempPoint);
-        var alivePoints = SearchAroundAlivePoint(tempPoint, false);
+        var alivePoints = GetGridAlivePoint(tempPoint, isIgnoreCorner);
         for (int i = 0; i < alivePoints.Count; i++)
         {
             Point p = alivePoints[i];
             if (OpenList.Exists(p))
             {
                 //计算G值, 如果比原来的大, 就什么都不做, 否则设置它的父节点为当前点,并更新G和F
-                FoundPoint(tempPoint, p);
+                FoundPoint(tempPoint, p);        
             }
             else
             {
                 //如果它们不在开始列表里, 就加入, 并设置父节点,并计算GHF
                 NotFoundPoint(tempPoint, end, p);
+                p.PrintPath();
             }
         }
     }
@@ -98,23 +99,25 @@ public class AStarSearch : BaseSearch
     /// <param name="point"></param>
     /// <param name="IsIgnoreCorner"></param>
     /// <returns></returns>
-    public List<Point> SearchAroundAlivePoint(Point point, bool IsIgnoreCorner)
+    public List<Point> GetGridAlivePoint(Point point, bool IsIgnoreCorner)
     {
         var points = new List<Point>(9);
-
         for (int x = point.X - 1; x <= point.X + 1; x++)
             for (int y = point.Y - 1; y <= point.Y + 1; y++)
             {
-                if (CanReach(point, x, y, IsIgnoreCorner))
+                if (IsWalkable(point, x, y, IsIgnoreCorner))
+                {
                     points.Add(x, y);
+                }
+
             }
         return points;
     }
 
     //在二维数组对应的位置不为障碍物
-    protected bool CanReach(int x, int y)
+    protected bool IsNotObstacle(int x, int y)
     {
-        if(!IsVaildPoint(x, y))
+        if (!IsVaildPoint(x, y))
         {
             return false;
         }
@@ -122,7 +125,7 @@ public class AStarSearch : BaseSearch
     }
 
     //是否是地图上的点
-    protected bool IsVaildPoint(int x,int y)
+    protected bool IsVaildPoint(int x, int y)
     {
         int h = map.mapData.GetLength(0);
         int w = map.mapData.GetLength(1);
@@ -137,22 +140,33 @@ public class AStarSearch : BaseSearch
         return true;
     }
 
-    public bool CanReach(Point start, int x, int y, bool IsIgnoreCorner)
+    public bool IsWalkable(Point start, int x, int y, bool IsIgnoreCorner)
     {
-        if (!CanReach(x, y) || CloseList.Exists(x, y))
+        //障碍点
+        if (!IsNotObstacle(x, y))
+        {
             return false;
+        }
+        //已经处理过的点
+        if (CloseList.Exists(x, y))
+        {
+            return false;
+        }
+        //直线方向
+        if (Math.Abs(x - start.X) + Math.Abs(y - start.Y) == 1)
+        {
+            return true;
+        }
+        //斜向方向
+        bool p1Walkable = IsNotObstacle(start.X, y);
+        bool p2Walkable = IsNotObstacle(x, start.Y);
+        if (p1Walkable && p2Walkable)
+        {
+            return true;
+        }
         else
         {
-            if (Math.Abs(x - start.X) + Math.Abs(y - start.Y) == 1)
-                return true;
-            //如果是斜方向移动, 判断是否 "拌脚"
-            else
-            {
-                if (CanReach(Math.Abs(x - 1), y) && CanReach(x, Math.Abs(y - 1)))
-                    return true;
-                else
-                    return IsIgnoreCorner;
-            }
+            return IsIgnoreCorner;
         }
     }
 
@@ -162,8 +176,8 @@ public class AStarSearch : BaseSearch
         if (G < point.G)
         {
             point.ParentPoint = tempStart;
-            point.G = G;
-            point.CalcF();
+            //point.G = G;
+            point.F = point.H + G;
         }
     }
 
@@ -185,7 +199,7 @@ public class AStarSearch : BaseSearch
     /// <returns></returns>
     protected int CalcG(Point start, Point point)
     {
-        int G = (Math.Abs(point.X - start.X) + Math.Abs(point.Y - start.Y)) == 2 ? VALUE_STEP_LINE : VALU_STEP_CORNER;
+        int G = (Math.Abs(point.X - start.X) + Math.Abs(point.Y - start.Y)) == 2 ? VALU_STEP_CORNER:VALUE_STEP_LINE;
         int parentG = point.ParentPoint != null ? point.ParentPoint.G : 0;
         return G + parentG;
     }

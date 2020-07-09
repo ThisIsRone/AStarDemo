@@ -24,6 +24,35 @@ public static class ListExtand
         points = points.OrderBy(p => p.F).ToList();
         return points[0];
     }
+
+    /// <summary>
+    /// 弹出最小的点
+    /// </summary>
+    /// <param name="points"></param>
+    /// <returns></returns>
+    public static Point PopMinPoint(this List<Point> points)
+    {
+        Point t = null;
+        if (points.Count > 0)
+        {
+            int minIndex = 0;
+            int f = 0;
+            for (int i = 0; i < points.Count; i++)
+            {
+                Point p = points[i];
+                f = f == 0 ? p.F : f;
+                if (p.F < f)
+                {
+                    f = p.F;
+                    minIndex = i;
+                }
+            }
+            t = points[minIndex];
+            points.RemoveAt(minIndex);
+        }        
+        return t;
+    }
+
     public static void Add(this List<Point> points, int x, int y)
     {
         Point point = new Point(x, y);

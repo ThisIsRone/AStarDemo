@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 public class Point
 {
@@ -21,6 +22,35 @@ public class Point
     public void CalcF()
     {
         this.F = this.G + this.H;
+    }   
+    
+    /// <summary>
+    /// 计算F父节点上的值值
+    /// </summary>
+    public void CalcPathF()
+    {
+        int totalF = 0;
+        var parent = ParentPoint;
+        while (parent != null)
+        {
+            parent.CalcF();
+            totalF += parent.G;
+            totalF += parent.H;
+            parent = parent.ParentPoint;
+        }
+        this.F = totalF + this.G + this.H;
+    }  
+    
+    public void PrintPath()
+    {
+        string msg = "";
+        var parent = this;
+        while (parent != null)
+        {
+            msg += string.Format("- ( X:{0} Y:{1})  ", parent. X, parent.Y);
+            parent = parent.ParentPoint;
+
+        }
     }
     public override string ToString()
     {
@@ -30,16 +60,5 @@ public class Point
     public string ToPoint()
     {
         return string.Format("(x:{0},y:{1})", X, Y);
-    }
-
-    public void PrintPath()
-    {
-        var parent = ParentPoint;
-        while (parent != null)
-        {
-            Debug.LogError(parent.ToString());
-            string rootName = parent.ToString();
-            parent = parent.ParentPoint;
-        }
     }
 }

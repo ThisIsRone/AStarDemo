@@ -9,15 +9,15 @@
     <script src="TemplateData/UnityProgress.js"></script>
     <script src="Build/UnityLoader.js"></script>
     <script>
-      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/AStarDemo.json", {onProgress: UnityProgress});
+      var gameInstance = UnityLoader.instantiate("gameContainer", "Build/AStarDemo.json", {onProgress: UnityProgress});
     </script>
   </head>
   <body>
     <div class="webgl-content">
-      <div id="unityContainer" style="width: 1136px; height: 640px"></div>
+      <div id="gameContainer" style="width: 1136px; height: 640px"></div>
       <div class="footer">
         <div class="webgl-logo"></div>
-        <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
         <div class="title">AStarDemo</div>
       </div>
     </div>

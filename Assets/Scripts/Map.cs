@@ -21,8 +21,8 @@ public class Map
 
     public void RebuildMap(int width,int height)
     {
-        start = new Vector2(4, 16);
-        end = new Vector2(8, 16);
+        start = new Vector2(7, 10);
+        end = new Vector2(14, 10);
         mapData = new int[height, width];
         for (int i = 0; i < width; i++)
         {
@@ -36,7 +36,6 @@ public class Map
 
     public int GetValue(int x,int y)
     {
-        Debug.Log(string.Format("x:{0} y:{1}",x,y));
         return mapData[y,x];
     }   
 

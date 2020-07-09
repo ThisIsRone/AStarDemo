@@ -26,17 +26,22 @@ public class Panel : MonoBehaviour
     [SerializeField]
     private Toggle tgl_ShowFGH;
     [SerializeField]
+    private Toggle tgl_IgnoreCorner;
+    [SerializeField]
     private Dropdown drpd_Opt;  
     [SerializeField]
     private Slider sld_viewScale;  
     [SerializeField]
-    private Slider sld_interval;
+    private Slider sld_interval;    
     [SerializeField]
     private Button btn_reset;
     [SerializeField]
     private Button btn_start;    
     [SerializeField]
     private Button btn_switch;
+    [SerializeField]
+    private GameObject root_ctrl;
+
 
     private void Awake()
     {
@@ -49,7 +54,8 @@ public class Panel : MonoBehaviour
         sld_viewScale.onValueChanged.AddListener(OnClickSlider);
         btn_reset.onClick.AddListener(() => {
             OnClickDropDown(drpd_Opt.value);
-        }); 
+        });
+        btn_switch.onClick.AddListener(onClickSwitch);
     }
     private void Start()
     {
@@ -129,19 +135,26 @@ public class Panel : MonoBehaviour
             search.CallBack = OpenListCallBack;
             searchData = new AstarData()
             {
-                isIgnoreCorner = true,
                  cmpltCllBck = (Point point) =>
                  {
-                     var parent = point.ParentPoint;
-                     while (parent != null)
+                     if (point != null)
                      {
-                         string rootName = parent.ToPoint();
-                         Transform root = mapRoot.transform.Find(rootName);
-                         Pointer pointer = root?.GetComponent<Pointer>();
-                         pointer?.SetSelect();
-                         parent = parent.ParentPoint;
+                         var parent = point.ParentPoint;
+
+                         while (parent != null)
+                         {
+                             string rootName = parent.ToPoint();
+                             Transform root = mapRoot.transform.Find(rootName);
+                             Pointer pointer = root?.GetComponent<Pointer>();
+                             pointer?.SetSelect();
+                             parent = parent.ParentPoint;
+                         }
+                         coroutine = null;
                      }
-                     coroutine = null;
+                     else
+                     {
+                         Debug.LogWarning("路径为null");
+                     }
                  }
             };
             drawMap();
@@ -165,7 +178,9 @@ public class Panel : MonoBehaviour
         YieldInstruction interval = sld_interval.value == 0 ? null : new WaitForSeconds(sld_interval.value);
         searchData.interval = interval;
         searchData.start = new Point((int)map.start.x, (int)map.start.y);
-        searchData.end = new Point((int)map.end.x, (int)map.end.y);        
+        searchData.end = new Point((int)map.end.x, (int)map.end.y);
+        searchData.isIgnoreCorner = tgl_IgnoreCorner.isOn;
+
         if (coroutine != null)
         {
             StopCoroutine(coroutine);
@@ -188,5 +203,13 @@ public class Panel : MonoBehaviour
         {
             pointer.SetSearch(point);
         }
+    }
+
+    private bool is_on = true;
+
+    private void onClickSwitch()
+    {
+        is_on = !is_on;
+        root_ctrl.SetActive(is_on);
     }
 }
