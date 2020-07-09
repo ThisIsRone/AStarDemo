@@ -41,6 +41,8 @@ public class Panel : MonoBehaviour
     private Button btn_switch;
     [SerializeField]
     private GameObject root_ctrl;
+    [SerializeField]
+    private Animator animator;
 
 
     private void Awake()
@@ -210,6 +212,8 @@ public class Panel : MonoBehaviour
     private void onClickSwitch()
     {
         is_on = !is_on;
-        root_ctrl.SetActive(is_on);
+        //root_ctrl.SetActive(is_on);
+        string animName = is_on ? "open" : "close";
+        animator.Play(animName);
     }
 }
