@@ -128,11 +128,11 @@ public class Panel : MonoBehaviour
     }
     private void OnClickDropDown(int op)
     {
+        cleanMap();
+        map = new Map();
         if (op == 0)
         {
-            cleanMap();
             //A Star
-            map = new Map();
             search = new AStarSearch(map);
             search.CallBack = OpenListCallBack;
             searchData = new AstarData()
@@ -161,9 +161,35 @@ public class Panel : MonoBehaviour
             };
             drawMap();
         }
-        else
+        else if (op == 1)
         {
-            cleanMap();
+            search = new JumpPointSearch(map);
+            search.CallBack = OpenListCallBack;
+            searchData = new AstarData()
+            {
+                cmpltCllBck = (Point point) =>
+                {
+                    if (point != null)
+                    {
+                        var parent = point.ParentPoint;
+
+                        while (parent != null)
+                        {
+                            string rootName = parent.ToPoint();
+                            Transform root = mapRoot.transform.Find(rootName);
+                            Pointer pointer = root?.GetComponent<Pointer>();
+                            pointer?.SetSelect();
+                            parent = parent.ParentPoint;
+                        }
+                        coroutine = null;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("路径为null");
+                    }
+                }
+            };
+            drawMap();
         }
     }
 
