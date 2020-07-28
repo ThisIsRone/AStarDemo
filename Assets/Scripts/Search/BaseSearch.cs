@@ -16,7 +16,15 @@ public abstract class BaseSearch
     /// </summary>
     public Map map { get; private set; }
 
-    public Action<Point> CallBack { get; set; }
+    /// <summary>
+    /// 搜寻格子的回调
+    /// </summary>
+    public Action<Point> SearchCallBack { get; set; }
+
+    /// <summary>
+    /// 设置OpenList,以及重新计算G值时的回调
+    /// </summary>
+    public Action<Point> PointCallBack { get; set; }
 
     public abstract Point FindPath(SearchData searchData);
 

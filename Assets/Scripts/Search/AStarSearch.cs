@@ -26,15 +26,9 @@ public class AStarSearch : BaseSearch
 
     public override Point FindPath(SearchData searchData)
     {
-        if (!(searchData is AstarData))
-        {
-            Debug.LogError("数据类型错误！");
-            return null;
-        }
-        AstarData astarData = searchData as AstarData;
-        Point start = astarData.start;
-        Point end = astarData.end;
-        bool isIgnoreCorner = astarData.isIgnoreCorner;
+        Point start = searchData.start;
+        Point end = searchData.end;
+        bool isIgnoreCorner = searchData.isIgnoreCorner;
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
@@ -47,16 +41,10 @@ public class AStarSearch : BaseSearch
 
     public override IEnumerator AsynFindPath(SearchData searchData)
     {
-        if (!(searchData is AstarData))
-        {
-            Debug.LogError("数据类型错误！");
-            yield break;
-        }
-        AstarData astarData = searchData as AstarData;
-        Point start = astarData.start;
-        Point end = astarData.end;
-        bool isIgnoreCorner = astarData.isIgnoreCorner;
-        Action<Point> cmpltCllBck = astarData.cmpltCllBck;
+        Point start = searchData.start;
+        Point end = searchData.end;
+        bool isIgnoreCorner = searchData.isIgnoreCorner;
+        Action<Point> cmpltCllBck = searchData.cmpltCllBck;
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
@@ -178,6 +166,7 @@ public class AStarSearch : BaseSearch
             point.ParentPoint = tempStart;
             //point.G = G;
             point.F = point.H + G;
+            PointCallBack?.Invoke(point);
         }
     }
 
@@ -188,7 +177,8 @@ public class AStarSearch : BaseSearch
         point.H = CalcH(end, point);
         point.CalcF();
         OpenList.Add(point);
-        CallBack?.Invoke(point);
+        SearchCallBack?.Invoke(point);
+        PointCallBack?.Invoke(point);
     }
 
     /// <summary>

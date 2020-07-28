@@ -29,15 +29,9 @@ public class JumpPointSearch : BaseSearch
 
     public override Point FindPath(SearchData searchData)
     {
-        if (!(searchData is AstarData))
-        {
-            Debug.LogError("数据类型错误！");
-            return null;
-        }
-        AstarData astarData = searchData as AstarData;
-        Point start = astarData.start;
-        Point end = astarData.end;
-        bool isIgnoreCorner = astarData.isIgnoreCorner;
+        Point start = searchData.start;
+        Point end = searchData.end;
+        bool isIgnoreCorner = searchData.isIgnoreCorner;
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
@@ -50,15 +44,9 @@ public class JumpPointSearch : BaseSearch
 
     public override IEnumerator AsynFindPath(SearchData searchData)
     {
-        if (!(searchData is AstarData))
-        {
-            Debug.LogError("数据类型错误！");
-            yield break;
-        }
-        AstarData astarData = searchData as AstarData;
-        Point start = astarData.start;
-        Point end = astarData.end;
-        Action<Point> cmpltCllBck = astarData.cmpltCllBck;
+        Point start = searchData.start;
+        Point end = searchData.end;
+        Action<Point> cmpltCllBck = searchData.cmpltCllBck;
         OpenList.Add(start);
         while (OpenList.Count != 0)
         {
@@ -84,21 +72,23 @@ public class JumpPointSearch : BaseSearch
             var neighborPoint = GetNeighborNode(tempPoint, neighbor, end);
             if (neighborPoint != null)
             {
-                neighbor.ParentPoint = tempPoint;
-                neighbor.G = CalcG(tempPoint, neighbor);
-                neighbor.H = CalcH(end, neighbor);
-                neighbor.CalcF();
-                OpenList.Add(neighbor);
-                CallBack?.Invoke(neighbor);
-                FoundPoint(tempPoint, neighborPoint);
-                var G = CalcG(tempStart, point);
-                if (G < point.G)
+                if (CloseList.Contains(neighborPoint))
                 {
-                    point.ParentPoint = tempStart;
-                    //point.G = G;
-                    point.F = point.H + G;
+                    continue;
                 }
-            }            
+                neighborPoint.ParentPoint = tempPoint;
+                neighborPoint.G = CalcG(tempPoint, neighborPoint);
+                neighborPoint.H = CalcH(end, neighborPoint);
+                neighborPoint.CalcF();
+                OpenList.Add(neighborPoint);             
+                var G = CalcG(tempPoint, neighborPoint);
+                if (G < neighborPoint.G)
+                {
+                    neighborPoint.ParentPoint = tempPoint;
+                    neighborPoint.F = neighborPoint.H + G;
+                }
+                PointCallBack?.Invoke(neighborPoint);
+            }
         }
     }
 
@@ -216,10 +206,6 @@ public class JumpPointSearch : BaseSearch
         int yDirection = neighbor.Y - currentNode.Y;
 
         var point = Jump(neighbor.X, neighbor.Y, xDirection, yDirection, MaxJumpPointDistance, end);
-        if (point != null)
-        {
-            Debug.LogError(point.ToString());
-        }
         return point;
     }
 
@@ -227,7 +213,7 @@ public class JumpPointSearch : BaseSearch
     {
         if (!IsWalkable(curPosx, curPosY))
             return null;
-
+        CallSearch(curPosx, curPosY);
         //递归最大深度 ||  搜索到终点
         if (depth == 0 || (end.X == curPosx && end.Y == curPosY))
             return new Point(curPosx, curPosY);
@@ -311,27 +297,6 @@ public class JumpPointSearch : BaseSearch
         return true;
     }
 
-    protected void FoundPoint(Point tempStart, Point point)
-    {
-        var G = CalcG(tempStart, point);
-        if (G < point.G)
-        {
-            point.ParentPoint = tempStart;
-            //point.G = G;
-            point.F = point.H + G;
-        }
-    }
-
-    protected void NotFoundPoint(Point tempStart, Point end, Point point)
-    {
-        point.ParentPoint = tempStart;
-        point.G = CalcG(tempStart, point);
-        point.H = CalcH(end, point);
-        point.CalcF();
-        OpenList.Add(point);
-        CallBack?.Invoke(point);
-    }
-
     /// <summary>
     /// 计算G值
     /// </summary>
@@ -362,6 +327,12 @@ public class JumpPointSearch : BaseSearch
     {
         int step = Math.Abs(point.X - end.X) + Math.Abs(point.Y - end.Y);
         return step * VALUE_STEP_LINE;
+    }
+
+    private void CallSearch(int curPosx, int curPosY)
+    {
+        Point point = new Point(curPosx, curPosY);
+        SearchCallBack?.Invoke(point);
     }
 
 }

@@ -147,7 +147,11 @@ public class Pointer : MonoBehaviour
         a = Mathf.Clamp(a, 0.3f, 0.8f);
         Color color = new Color(img.color.r, img.color.g, img.color.b, a);
         img.color = color;
-        txt_number.text = string.Format("F:{2} \n G:{0} H:{1}",point.G,point.H,point.F);
+    }
+
+    public void ShowGHF(Point point)
+    {
+        txt_number.text = string.Format("F:{2} \n G:{0} H:{1}", point.G, point.H, point.F);
     }
 
     private void SetObstacle()

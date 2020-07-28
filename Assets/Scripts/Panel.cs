@@ -130,71 +130,28 @@ public class Panel : MonoBehaviour
     {
         cleanMap();
         map = new Map();
+        searchData = new SearchData();
+        searchData.cmpltCllBck = drawFinalPath;
         if (op == 0)
         {
             //A Star
             search = new AStarSearch(map);
-            search.CallBack = OpenListCallBack;
-            searchData = new AstarData()
-            {
-                 cmpltCllBck = (Point point) =>
-                 {
-                     if (point != null)
-                     {
-                         var parent = point.ParentPoint;
-
-                         while (parent != null)
-                         {
-                             string rootName = parent.ToPoint();
-                             Transform root = mapRoot.transform.Find(rootName);
-                             Pointer pointer = root?.GetComponent<Pointer>();
-                             pointer?.SetSelect();
-                             parent = parent.ParentPoint;
-                         }
-                         coroutine = null;
-                     }
-                     else
-                     {
-                         Debug.LogWarning("路径为null");
-                     }
-                 }
-            };
+            search.SearchCallBack = SearchCallBack;
+            search.PointCallBack = PointCallBack;
             drawMap();
         }
         else if (op == 1)
         {
             search = new JumpPointSearch(map);
-            search.CallBack = OpenListCallBack;
-            searchData = new AstarData()
-            {
-                cmpltCllBck = (Point point) =>
-                {
-                    if (point != null)
-                    {
-                        var parent = point.ParentPoint;
-
-                        while (parent != null)
-                        {
-                            string rootName = parent.ToPoint();
-                            Transform root = mapRoot.transform.Find(rootName);
-                            Pointer pointer = root?.GetComponent<Pointer>();
-                            pointer?.SetSelect();
-                            parent = parent.ParentPoint;
-                        }
-                        coroutine = null;
-                    }
-                    else
-                    {
-                        Debug.LogWarning("路径为null");
-                    }
-                }
-            };
+            search.SearchCallBack = SearchCallBack;
+            search.PointCallBack = PointCallBack;
             drawMap();
         }
     }
 
     private void drawMap()
     {
+        StopAllCoroutines();
         int width = 20;
         int height = 20;
         map.RebuildMap(width, height);
@@ -215,14 +172,10 @@ public class Panel : MonoBehaviour
             coroutine = null;
         }
         coroutine = StartCoroutine(search.AsynFindPath(searchData));
+        onClickSwitch();
     }
 
-    //private Point GetPoint(Point start, Point end)
-    //{
-    //    return finder.FindPath(start, end, true);
-    //}
-
-    private void OpenListCallBack(Point point)
+    private void SearchCallBack(Point point)
     {
         string rootName = point.ToPoint();
         Transform root = mapRoot.transform.Find(rootName);
@@ -233,13 +186,74 @@ public class Panel : MonoBehaviour
         }
     }
 
+    private void PointCallBack(Point point)
+    {
+        string rootName = point.ToPoint();
+        Transform root = mapRoot.transform.Find(rootName);
+        Pointer pointer = root?.GetComponent<Pointer>();
+        if (pointer)
+        {
+            pointer.ShowGHF(point);
+        }
+    }
+
     private bool is_on = true;
 
     private void onClickSwitch()
     {
         is_on = !is_on;
-        //root_ctrl.SetActive(is_on);
         string animName = is_on ? "open" : "close";
         animator.Play(animName);
+    }
+
+    private void drawFinalPath(Point point)
+    {
+        List<Point> path = new List<Point>();
+        if (point != null)
+        {
+            var parent = point;
+            while (parent != null)
+            {
+                path.Add(parent);
+                parent = parent.ParentPoint;
+            }
+            coroutine = null;   
+        }
+        if (path.Count > 0)
+        {
+            Point proPoint = null;
+            for (int i = 0; i < path.Count; i++)
+            {
+                var p = path[i];
+                if (proPoint == null)
+                {
+                    string rootName = p.ToPoint();
+                    setPointer(rootName);
+                    proPoint = p;
+                    continue;
+                }
+                int xDiff = p.X - proPoint.X;
+                int yDiff = p.Y - proPoint.Y;
+                int xStep = Mathf.Clamp(xDiff, -1, 1);
+                int yStep = Mathf.Clamp(yDiff, -1, 1);
+                xDiff = Mathf.Abs(xDiff);
+                yDiff = Mathf.Abs(yDiff);
+                for (int j = 0; j < Mathf.Max(xDiff, yDiff); j++)
+                {
+                    int posX = j < xDiff ? proPoint.X + (xStep * j) : p.X;
+                    int posY = j < yDiff ? proPoint.Y + (yStep * j) : p.Y;
+                    string rootName = string.Format("(x:{0},y:{1})", posX, posY);
+                    setPointer(rootName);
+                }
+                proPoint = p;
+            }
+        }
+    }
+
+    private void setPointer(string rootName)
+    {
+        Transform root = mapRoot.transform.Find(rootName);
+        Pointer pointer = root?.GetComponent<Pointer>();
+        pointer?.SetSelect();
     }
 }
