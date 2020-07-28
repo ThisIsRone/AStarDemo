@@ -22,8 +22,6 @@ public class JumpPointSearch : BaseSearch
 
     protected List<Point> OpenList = new List<Point>();
 
-    private AstarData astarData;
-
     public JumpPointSearch(Map map) : base(map)
     {
 
@@ -57,7 +55,7 @@ public class JumpPointSearch : BaseSearch
             Debug.LogError("数据类型错误！");
             yield break;
         }
-        astarData = searchData as AstarData;
+        AstarData astarData = searchData as AstarData;
         Point start = astarData.start;
         Point end = astarData.end;
         Action<Point> cmpltCllBck = astarData.cmpltCllBck;
@@ -78,43 +76,24 @@ public class JumpPointSearch : BaseSearch
         //找出F值最小的点
         var tempPoint = OpenList.PopMinPoint();
         CloseList.Add(tempPoint);
-        if (tempPoint != null)
-        {
-            Debug.LogError("stepSearch " + tempPoint.ToString());
-        }
         var neighbors = GetNeighbors(tempPoint);
         int count = neighbors.Count;
         for (int i = 0; i < count; i++)
         {
             Point neighbor = neighbors[i];
-            var neighborPoint = GetJumpPoint(tempPoint, neighbor, end);
+            var neighborPoint = GetNeighborNode(tempPoint, neighbor, end);
             if (neighborPoint != null)
             {
-                if (CloseList.Exists(neighborPoint))
-                {
-                    continue;
-                }
-                bool isOpen = OpenList.Exists(neighborPoint);
-                if (!isOpen)
-                {
-                    neighborPoint.ParentPoint = tempPoint;
-                    neighborPoint.G = CalcG(tempPoint, neighborPoint);
-                    neighborPoint.H = CalcH(end, neighborPoint);
-                    neighborPoint.CalcF();
-                }
-                int tg = tempPoint.G + neighborPoint.G;
-                if (tg < neighborPoint.G)
-                {
-                    neighborPoint.G = tg;
-                }
                 if (OpenList.Exists(neighborPoint))
                 {
-
+                    //计算G值, 如果比原来的大, 就什么都不做, 否则设置它的父节点为当前点,并更新G和F
+                    FoundPoint(tempPoint, neighborPoint);
                 }
                 else
                 {
-                    CallBack?.Invoke(neighborPoint);
-                    OpenList.Add(neighborPoint);
+                    //如果它们不在开始列表里, 就加入, 并设置父节点,并计算GHF
+                    NotFoundPoint(tempPoint, end, neighborPoint);
+                    neighbor.PrintPath();
                 }
             }            
         }
@@ -180,14 +159,14 @@ public class JumpPointSearch : BaseSearch
             {
                 if (IsWalkable(point.X - xDirection, point.Y + yDirection))
                 {
-                    points.Add(new Point(point.X - xDirection, point.Y + yDirection));
+                    points.Add(new Point(point.X, point.Y + yDirection));
                 }
             }
             if (!neighbourBack && neighbourRight)
             {
                 if (IsWalkable(point.X + xDirection, point.Y - yDirection))
                 {
-                    points.Add(new Point(point.X + xDirection, point.Y - yDirection));
+                    points.Add(new Point(point.X, point.Y + yDirection));
                 }
             }
         }
@@ -202,11 +181,11 @@ public class JumpPointSearch : BaseSearch
                     //强迫邻居
                     if (!IsWalkable(point.X + 1, point.Y) &&IsWalkable(point.X + 1, point.Y + yDirection))
                     {
-                        points.Add(new Point(point.X + 1, point.Y + yDirection));
+                        points.Add(new Point(point.X, point.Y + yDirection));
                     }
                     if (!IsWalkable(point.X - 1, point.Y) &&IsWalkable(point.X - 1, point.Y + yDirection))
                     {
-                        points.Add(new Point(point.X - 1, point.Y + yDirection));
+                        points.Add(new Point(point.X, point.Y + yDirection));
                     }
                 }
             }
@@ -231,9 +210,12 @@ public class JumpPointSearch : BaseSearch
         return points;
     }
 
-    private Point GetJumpPoint(Point currentNode, Point neighbor, Point end)
+    private Point GetNeighborNode(Point currentNode, Point neighbor, Point end)
     {
-        var point = Jump(neighbor.X, neighbor.Y, currentNode.X, currentNode.Y, MaxJumpPointDistance, end);
+        int xDirection = neighbor.X - currentNode.X;
+        int yDirection = neighbor.Y - currentNode.Y;
+
+        var point = Jump(neighbor.X, neighbor.Y, xDirection, yDirection, MaxJumpPointDistance, end);
         if (point != null)
         {
             Debug.LogError(point.ToString());
@@ -241,46 +223,69 @@ public class JumpPointSearch : BaseSearch
         return point;
     }
 
-    private Point Jump(int curPosx, int curPosY, int proPosX, int proPoxY, int depth, Point end)
+    private Point Jump(int posX, int posY, int xDirection, int yDirection, int depth, Point end)
     {
-        int xDirection = curPosx - proPosX;
-        int yDirection = curPosY - proPoxY;
-
-        if (!IsWalkable(curPosx, curPosY))
+        if (!IsWalkable(posX, posY))
             return null;
-        if (depth == 0 || (end.X == curPosx && end.Y == curPosY))
-            return new Point(curPosx, curPosY);
+        if (depth == 0 || (end.X == posX && end.Y == posY))
+            return new Point(posX, posY);
+        if (IsHaveForceNeighbor(posX, posY, xDirection, yDirection))
+        {
+            //若有强迫邻居，直接返回。
+            return new Point(posX, posY);
+        }
+        if (xDirection != 0)
+        {
+            //横向递归寻找强迫邻居
+            var p = Jump(posX + xDirection, posY, xDirection, 0, depth - 1, end);
+            if (p != null)
+            {
+                return p;
+            }
+        }
+        if (yDirection != 0)
+        {
+            //纵向向递归寻找强迫邻居
+            var p = Jump(posX, posY + yDirection, 0, yDirection, depth - 1, end);
+            if (p != null)
+            {
+                return p;
+            }
+        }
+        return Jump(posX + xDirection, posY + yDirection, xDirection, yDirection, depth - 1, end);
+    }
+
+
+    /// <summary>
+    /// 是否有强迫邻居
+    /// </summary>
+    private bool IsHaveForceNeighbor(int posX, int posY, int xDirection, int yDirection)
+    {
         if (xDirection != 0 && yDirection != 0)
         {
             //对角向
-            if ((IsWalkable(curPosx + xDirection, curPosY - yDirection) && !IsWalkable(curPosx , curPosY - yDirection)) || (IsWalkable(curPosx - xDirection, curPosY + yDirection) && !IsWalkable(curPosx - xDirection, curPosY)))
+            if ((IsWalkable(posX + 1, posY + yDirection) && !IsWalkable(posX + 1, posY)) ||(IsWalkable(posX - 1, posY + yDirection) && !IsWalkable(posX - 1, posY)))
             {
-                return new Point(curPosx, curPosY);
-            }
-
-            if (Jump(curPosx, curPosY + yDirection, curPosx, curPosY, depth - 1, end) != null || Jump(curPosx + xDirection, curPosY, curPosx, curPosY, depth - 1, end) != null)
-            {
-                return new Point(curPosx, curPosY);
+                return true;
             }
         }
         else if (xDirection != 0)
         {
             //横向
-            if ((IsWalkable(curPosx + xDirection, curPosY + 1) && !IsWalkable(curPosx, curPosY + 1)) || (IsWalkable(curPosx + xDirection, curPosY - 1) && !IsWalkable(curPosx, curPosY - 1)))
+            if ((IsWalkable(posX + xDirection, posY + 1) && !IsWalkable(posX, posY + 1)) || (IsWalkable(posX + xDirection, posY - 1) && !IsWalkable(posX, posY - 1)))
             {
-                return new Point(curPosx, curPosY);
+                return true;
             }
         }
-        else if (yDirection != 0)
+        else
         {
             //纵向
-            if ((IsWalkable(curPosx + 1, curPosY + yDirection) && !IsWalkable(curPosx + 1, curPosY)) || (IsWalkable(curPosx - 1, curPosY + yDirection) && !IsWalkable(curPosx - 1, curPosY)))
+            if ((IsWalkable(posX + 1, posY + yDirection) && !IsWalkable(posX + 1, posY)) || (IsWalkable(posX - 1, posY + yDirection) && !IsWalkable(posX - 1, posY)))
             {
-                return new Point(curPosx, curPosY);
+                return true;
             }
         }
-
-        return Jump(curPosx + xDirection, curPosY + yDirection, curPosx, curPosY, depth - 1, end);
+        return false;
     }
 
     //在二维数组对应的位置不为障碍物
@@ -332,7 +337,6 @@ public class JumpPointSearch : BaseSearch
             point.ParentPoint = tempStart;
             //point.G = G;
             point.F = point.H + G;
-            Debug.LogError(" point.H + G " + (point.H + G));
         }
     }
 
@@ -347,20 +351,16 @@ public class JumpPointSearch : BaseSearch
     }
 
     /// <summary>
-    /// 计算G值
+    /// 计算G值 只适用于相邻的两个点
     /// </summary>
     /// <param name="start">起始点</param>
     /// <param name="point">目标点</param>
     /// <returns></returns>
     protected int CalcG(Point start, Point point)
     {
-        int distX = Math.Abs(point.X - start.X);
-        int distY = Math.Abs(point.Y - start.Y);
-
-        if (distX > distY)
-            return VALU_STEP_CORNER * distY + VALUE_STEP_LINE * (distX - distY);
-
-        return VALU_STEP_CORNER * distX + VALUE_STEP_LINE * (distY - distX);
+        int G = (Math.Abs(point.X - start.X) + Math.Abs(point.Y - start.Y)) == 2 ? VALU_STEP_CORNER:VALUE_STEP_LINE;
+        int parentG = point.ParentPoint != null ? point.ParentPoint.G : 0;
+        return G + parentG;
     }
 
     /// <summary>
