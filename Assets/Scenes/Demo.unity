@@ -2660,7 +2660,7 @@ MonoBehaviour:
   btn_start: {fileID: 1183977604}
   btn_switch: {fileID: 466706849}
   root_ctrl: {fileID: 1729956085}
-  animator: {fileID: 1271205474}
+  rect_ScrollView: {fileID: 1895091289}
 --- !u!95 &1271205474
 Animator:
   serializedVersion: 3
@@ -4154,7 +4154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 264.90002, y: 638}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1729956087
@@ -4391,7 +4391,7 @@ RectTransform:
   m_Father: {fileID: 1271205472}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.25, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -10}

@@ -42,7 +42,7 @@ public class Panel : MonoBehaviour
     [SerializeField]
     private GameObject root_ctrl;
     [SerializeField]
-    private Animator animator;
+    private RectTransform rect_ScrollView;
 
 
     private void Awake()
@@ -202,8 +202,16 @@ public class Panel : MonoBehaviour
     private void onClickSwitch()
     {
         is_on = !is_on;
-        string animName = is_on ? "open" : "close";
-        animator.Play(animName);
+        root_ctrl.SetActive(is_on);
+        var anchorMin = rect_ScrollView.anchorMin;
+        if (is_on)
+        {
+            rect_ScrollView.anchorMin = new Vector2(0.25f, anchorMin.y);
+        }
+        else
+        {
+            rect_ScrollView.anchorMin = new Vector2(0, anchorMin.y);
+        }
     }
 
     private void drawFinalPath(Point point)
