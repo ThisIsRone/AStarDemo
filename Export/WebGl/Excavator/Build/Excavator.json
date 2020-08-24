@@ -1,0 +1,16 @@
+{
+"companyName": "DefaultCompany",
+"productName": "3D-excavator",
+"productVersion": "0.1",
+"dataUrl": "Excavator.data.unityweb",
+"wasmCodeUrl": "Excavator.wasm.code.unityweb",
+"wasmFrameworkUrl": "Excavator.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0","WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.8f1"
+}

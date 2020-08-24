@@ -8,6 +8,7 @@ rm -fr *
 
 echo "..........copy AStarDemo to html.........."
 cp -r /root/AStarDemo/Export/WebGl/AStarDemo/* /var/www/html/AStarDemo/
+cp -r /root/AStarDemo/Export/WebGl/Excavator/* /var/www/html/Excavator/
 echo "..............restart httpd..............."
 systemctl restart httpd  
 
